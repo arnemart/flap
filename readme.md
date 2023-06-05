@@ -2,7 +2,7 @@
 
 ## To run dev server:
 
-`npm start`
+`npm start`, game runs on <http://localhost:5173/>
 
 ## To build for production:
 
