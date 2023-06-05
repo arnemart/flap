@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "vite": "^4.1.4"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 120
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "images": ["gameover.gif", "splash.png", "birb1.png", "birb2.png", "bg.png", "stalagmipe.png", "stalagtipe.png"],
+  "sounds": ["explosion_1.mp3", "explosion_2.mp3", "flap.m4a", "point_1.mp3", "music.mp3", "stinger.mp3"]
+}

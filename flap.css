@@ -1,0 +1,98 @@
+.game {
+  background-size: 100%;
+  background-size: cover;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.game__wrap {
+  margin: 0 auto;
+}
+
+.game__console {
+  position: relative;
+  background-image: url(/fame-toy.png);
+  background-size: 100% 100%;
+  height: 711px;
+  width: 455px;
+  transform-origin: top left;
+}
+
+.game__console canvas {
+  display: block;
+  image-rendering: pixelated;
+  position: absolute;
+  left: 36px;
+  top: 82px;
+  width: 384px;
+  height: 462px;
+}
+
+.game__console__btn {
+  touch-action: manipulation;
+  border: none;
+  outline: none;
+  background: url(/shadow.png);
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 50px 50px;
+  cursor: pointer;
+  display: block;
+  height: 50px;
+  opacity: 0;
+  position: absolute;
+  transform: rotate(45deg);
+  width: 50px;
+}
+
+.game__console__btn:active {
+  opacity: 1;
+}
+
+.game__console__btn--up {
+  left: 117px;
+  top: 580px;
+}
+
+.game__console__btn--down {
+  left: 117px;
+  top: 651px;
+}
+
+.game__console__btn--left {
+  left: 81px;
+  top: 615px;
+}
+
+.game__console__btn--right {
+  left: 153px;
+  top: 615px;
+}
+
+.game__console__btn--btn {
+  height: 80px;
+  left: 287px;
+  top: 599px;
+  width: 80px;
+}
+
+@media screen and (min-width: 456px) {
+  .game {
+    align-items: top;
+    display: flex;
+    justify-content: center;
+  }
+
+  .game__console {
+    flex: 0 0 455px;
+  }
+}
+
+@media screen and (min-width: 456px) and (min-height: 712px) {
+  .game {
+    align-items: center;
+  }
+}
