@@ -127,10 +127,11 @@ const startGame = (assets) => {
       return
     }
 
-    // Adjust for different frame rates
-    const fpsFactor = (time - prevTime) / (1000 / 60)
-
+    const timeDelta = time - prevTime
     prevTime = time
+
+    // Adjust for different frame rates
+    const fpsFactor = timeDelta / (1000 / 60)
 
     // Adjust vertical position and speed (birb height)
     y += speedY * fpsFactor
@@ -198,7 +199,7 @@ const startGame = (assets) => {
     C.fillText(score, W - 5, 15)
 
     // Render FPS
-    // C.fillText(`${(60 / fpsFactor).toFixed(2)}fps`, W - 5, H - 5)
+    // C.fillText(`${(1000 / timeDelta).toFixed(2)}fps`, W - 5, H - 5)
 
     // Go to next frame
     if (running && !paused) {
