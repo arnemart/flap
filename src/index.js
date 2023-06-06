@@ -1,5 +1,5 @@
 import manifest from "./assets.json"
-import { load, loadingScreen, fadeToBlack, crashScreen, once, rand } from "./utils"
+import { load, loadingScreen, fadeToBlack, crashScreen, rand } from "./utils"
 import { initAudio, playEffect, playMusic } from "./audio"
 
 // Handle small displays
@@ -25,39 +25,66 @@ C.imageSmoothingEnabled = false
 
 const btn = document.querySelector(".game__console__btn--btn")
 
+// Game and control state
+let running = false
+let flapHeldDown = false
+
 // Load and go
 load(manifest, loadingScreen(C, W, H)).then((assets) => {
   initAudio(assets)
 
   C.drawImage(assets["splash.png"], 0, 0)
 
-  once(["keypress", "click"], () => {
-    startGame(assets)
+  document.body.addEventListener("keydown", (e) => (flapHeldDown = running && e.key == " "))
+  document.body.addEventListener("keyup", (e) => {
+    if (e.key == " ") {
+      if (!running) {
+        startGame(assets)
+      } else {
+        flapHeldDown = false
+      }
+    }
   })
+
+  // Handle mouse/touch events
+  const flapDown = () => {
+    if (running) {
+      flapHeldDown = true
+    } else {
+      startGame(assets)
+    }
+  }
+  const flapUp = () => (flapHeldDown = false)
+
+  btn.addEventListener("mousedown", flapDown)
+  btn.addEventListener("touchstart", flapDown)
+  btn.addEventListener("mouseup", flapUp)
+  btn.addEventListener("touchend", flapUp)
 })
 
 const startGame = (assets) => {
+  running = true
+
   playMusic("music.mp3")
+
   C.font = "14px monospace"
   C.textAlign = "right"
   C.fillStyle = "#002351"
 
   let frame = 0
-  let prevTime
   let lastFlap = 0
+  let prevTime
+  let flapHeldDownPrevFrame = false
 
-  // Birb position, speed and acceleration
+  // Birb position, speed, and acceleration
   let y = 10
   let speedY = 0
   const accY = 0.07
 
-  // Background scroll position, speed and acceleration
+  // Background scroll position, speed, and acceleration
   let x = 0
   let speedX = 1
   const accX = 0.0004
-
-  let running = true
-  let paused = false
 
   let score = 0
 
@@ -73,51 +100,14 @@ const startGame = (assets) => {
   addPipe()
 
   const crash = () => {
-    running = false
     playEffect(`explosion_${rand(1, 2)}.mp3`)
     playMusic("stinger.mp3", false)
     fadeToBlack(C, W, H)
     setTimeout(() => {
+      running = false
       crashScreen(C, W, H, score)
-      once(["click", "keypress"], () => startGame(assets))
     }, 2450)
   }
-
-  const pause = () => {
-    if (paused) {
-      paused = false
-      prevTime = null
-      requestAnimationFrame(gameLoop)
-    } else {
-      paused = true
-    }
-  }
-
-  // Handle keyboarb events
-  let flapHeldDown = false
-  let flapHeldDownPrev = false
-
-  document.body.addEventListener("keydown", (e) => (flapHeldDown = e.key == " "))
-  document.body.addEventListener("keyup", (e) => {
-    switch (e.key) {
-      case " ":
-        if (paused) {
-          pause()
-        } else {
-          flapHeldDown = false
-        }
-        break
-      case "Escape":
-        pause()
-        break
-    }
-  })
-
-  // Handle mouse/touch events
-  btn.addEventListener("mousedown", () => (flapHeldDown = true))
-  btn.addEventListener("touchstart", () => (flapHeldDown = true))
-  btn.addEventListener("mouseup", () => (flapHeldDown = false))
-  btn.addEventListener("touchend", () => (flapHeldDown = false))
 
   const gameLoop = (time) => {
     // Set up time for first run through game loop
@@ -143,16 +133,16 @@ const startGame = (assets) => {
 
     // Flap if flap button is held down during this frame
     // Don't flap continously if flap is held down continuously
-    if (flapHeldDown && !flapHeldDownPrev) {
+    if (flapHeldDown && !flapHeldDownPrevFrame) {
       speedY = Math.max(-3.5, speedY - 2.5)
       playEffect("flap.m4a")
       lastFlap = time
     }
 
     if (flapHeldDown) {
-      flapHeldDownPrev = true
+      flapHeldDownPrevFrame = true
     } else {
-      flapHeldDownPrev = false
+      flapHeldDownPrevFrame = false
     }
 
     // Handle scoring
@@ -199,10 +189,10 @@ const startGame = (assets) => {
     C.fillText(score, W - 5, 15)
 
     // Render FPS
-    // C.fillText(`${(1000 / timeDelta).toFixed(2)}fps`, W - 5, H - 5)
+    C.fillText(`${(1000 / timeDelta).toFixed(2)}fps`, W - 5, H - 5)
 
     // Go to next frame
-    if (running && !paused) {
+    if (running) {
       frame++
       window.requestAnimationFrame(gameLoop)
     }
